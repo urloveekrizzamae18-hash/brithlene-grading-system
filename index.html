@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <meta charset="UTF-8" />
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  />
+
+  <title>
+    Emilie Baay Grading System
+  </title>
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Supabase -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <!-- FONT -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet"
+  />
+
+  <style>
+
+    *{
+      font-family:'Poppins',sans-serif;
+    }
+
+    body{
+
+      background:
+      linear-gradient(
+        135deg,
+        #0ea5e9,
+        #2563eb,
+        #1e3a8a,
+        #0f172a
+      );
+
+      background-size:
+      400% 400%;
+
+      animation:
+      oceanMove 15s ease infinite;
+
+      min-height:100vh;
+
+    }
+
+    @keyframes oceanMove{
+
+      0%{
+        background-position:0% 50%;
+      }
+
+      50%{
+        background-position:100% 50%;
+      }
+
+      100%{
+        background-position:0% 50%;
+      }
+
+    }
+
+    .glass{
+
+      background:
+      rgba(255,255,255,0.12);
+
+      backdrop-filter:
+      blur(14px);
+
+      -webkit-backdrop-filter:
+      blur(14px);
+
+      border:
+      1px solid rgba(255,255,255,0.15);
+
+      box-shadow:
+      0 8px 32px rgba(0,0,0,0.25);
+
+      transition:
+      0.3s ease;
+
+    }
+
+    .glass:hover{
+
+      transform:
+      translateY(-3px);
+
+      box-shadow:
+      0 12px 35px rgba(0,0,0,0.35);
+
+    }
+
+    input{
+
+      transition:
+      0.3s ease;
+
+      color:white;
+
+    }
+
+    input::placeholder{
+
+      color:#dbeafe;
+
+    }
+
+    input:focus{
+
+      transform:
+      scale(1.01);
+
+      outline:none;
+
+      box-shadow:
+      0 0 0 3px rgba(59,130,246,0.35);
+
+    }
+
+    button{
+
+      transition:
+      0.25s ease;
+
+    }
+
+    button:hover{
+
+      transform:
+      scale(1.03);
+
+    }
+
+    table tr{
+
+      transition:
+      0.2s ease;
+
+    }
+
+    table tr:hover{
+
+      background:
+      rgba(255,255,255,0.08);
+
+    }
+
+  </style>
+
+</head>
+
+<body class="text-white">
+
+<!-- HEADER -->
+<header class="glass p-5">
+
+  <h1
+    class="
+    text-4xl
+    font-extrabold
+    text-center
+    bg-gradient-to-r
+    from-cyan-300
+    via-blue-200
+    to-sky-400
+    bg-clip-text
+    text-transparent
+    "
+  >
+
+    🌊 Emilie Baay Grading System
+
+  </h1>
+
+</header>
+
+<!-- MAIN -->
+<main class="max-w-7xl mx-auto p-6">
+
+  <!-- STATS -->
+  <div class="grid md:grid-cols-3 gap-5 mb-8">
+
+    <div class="glass rounded-3xl p-6 text-center">
+
+      <h2 class="font-bold text-lg">
+        Total Students
+      </h2>
+
+      <p
+        id="totalStudents"
+        class="text-5xl font-extrabold"
+      >
+        0
+      </p>
+
+    </div>
+
+    <div class="glass rounded-3xl p-6 text-center">
+
+      <h2 class="font-bold text-lg">
+        Passed
+      </h2>
+
+      <p
+        id="passedStudents"
+        class="text-5xl font-extrabold text-cyan-300"
+      >
+        0
+      </p>
+
+    </div>
+
+    <div class="glass rounded-3xl p-6 text-center">
+
+      <h2 class="font-bold text-lg">
+        Failed
+      </h2>
+
+      <p
+        id="failedStudents"
+        class="text-5xl font-extrabold text-red-300"
+      >
+        0
+      </p>
+
+    </div>
+
+  </div>
+
+  <!-- FORM -->
+  <div class="glass rounded-[30px] p-8 mb-8">
+
+    <h2 class="text-3xl font-bold mb-6">
+
+      Enter Student Grades
+
+    </h2>
+
+    <form
+      id="grade-form"
+      class="space-y-6"
+    >
+
+      <!-- NAME -->
+      <input
+        id="student-name"
+        type="text"
+        required
+        placeholder="Student Full Name"
+        class="
+        w-full
+        p-4
+        rounded-2xl
+        bg-white/10
+        "
+      />
+
+      <!-- QUIZ -->
+      <div class="glass p-5 rounded-3xl">
+
+        <div class="flex justify-between mb-4">
+
+          <h3 class="text-2xl font-bold">
+
+            Quiz (20%)
+
+          </h3>
+
+          <button
+            type="button"
+            onclick="addField('quiz-container','quiz')"
+            class="
+            bg-cyan-500
+            hover:bg-cyan-600
+            text-white
+            px-5 py-2
+            rounded-2xl
+            "
+          >
+
+            + Add Quiz
+
+          </button>
+
+        </div>
+
+        <div
+          id="quiz-container"
+          class="space-y-3"
+        >
+
+          <div class="flex gap-2">
+
+            <input
+              type="number"
+              class="
+              quiz-input
+              w-full
+              p-3
+              rounded-2xl
+              bg-white/10
+              "
+              placeholder="Quiz 1"
+            />
+
+            <button
+              type="button"
+              onclick="this.parentElement.remove()"
+              class="
+              bg-red-500
+              hover:bg-red-600
+              text-white
+              px-4
+              rounded-2xl
+              "
+            >
+
+              ✖
+
+            </button>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- PRACTICAL -->
+      <div class="glass p-5 rounded-3xl">
+
+        <div class="flex justify-between mb-4">
+
+          <h3 class="text-2xl font-bold">
+
+            Practical (30%)
+
+          </h3>
+
+          <button
+            type="button"
+            onclick="addField('lab-container','lab')"
+            class="
+            bg-blue-500
+            hover:bg-blue-600
+            text-white
+            px-5 py-2
+            rounded-2xl
+            "
+          >
+
+            + Add Practical
+
+          </button>
+
+        </div>
+
+        <div
+          id="lab-container"
+          class="space-y-3"
+        >
+
+          <div class="flex gap-2">
+
+            <input
+              type="number"
+              class="
+              lab-input
+              w-full
+              p-3
+              rounded-2xl
+              bg-white/10
+              "
+              placeholder="Practical 1"
+            />
+
+            <button
+              type="button"
+              onclick="this.parentElement.remove()"
+              class="
+              bg-red-500
+              hover:bg-red-600
+              text-white
+              px-4
+              rounded-2xl
+              "
+            >
+
+              ✖
+
+            </button>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- ASSIGNMENT -->
+      <div class="glass p-5 rounded-3xl">
+
+        <div class="flex justify-between mb-4">
+
+          <h3 class="text-2xl font-bold">
+
+            Assignment (10%)
+
+          </h3>
+
+          <button
+            type="button"
+            onclick="addField('assignment-container','assignment')"
+            class="
+            bg-sky-500
+            hover:bg-sky-600
+            text-white
+            px-5 py-2
+            rounded-2xl
+            "
+          >
+
+            + Add Assignment
+
+          </button>
+
+        </div>
+
+        <div
+          id="assignment-container"
+          class="space-y-3"
+        >
+
+          <div class="flex gap-2">
+
+            <input
+              type="number"
+              class="
+              assignment-input
+              w-full
+              p-3
+              rounded-2xl
+              bg-white/10
+              "
+              placeholder="Assignment 1"
+            />
+
+            <button
+              type="button"
+              onclick="this.parentElement.remove()"
+              class="
+              bg-red-500
+              hover:bg-red-600
+              text-white
+              px-4
+              rounded-2xl
+              "
+            >
+
+              ✖
+
+            </button>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- ATTENDANCE -->
+      <div class="glass p-5 rounded-3xl">
+
+        <div class="flex justify-between mb-4">
+
+          <h3 class="text-2xl font-bold">
+
+            Attendance (10%)
+
+          </h3>
+
+          <button
+            type="button"
+            onclick="addField('attendance-container','attendance')"
+            class="
+            bg-teal-500
+            hover:bg-teal-600
+            text-white
+            px-5 py-2
+            rounded-2xl
+            "
+          >
+
+            + Add Attendance
+
+          </button>
+
+        </div>
+
+        <div
+          id="attendance-container"
+          class="space-y-3"
+        >
+
+          <div class="flex gap-2">
+
+            <input
+              type="number"
+              class="
+              attendance-input
+              w-full
+              p-3
+              rounded-2xl
+              bg-white/10
+              "
+              placeholder="Attendance 1"
+            />
+
+            <button
+              type="button"
+              onclick="this.parentElement.remove()"
+              class="
+              bg-red-500
+              hover:bg-red-600
+              text-white
+              px-4
+              rounded-2xl
+              "
+            >
+
+              ✖
+
+            </button>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- EXAM -->
+      <div class="glass p-5 rounded-3xl">
+
+        <div class="flex justify-between mb-4">
+
+          <h3 class="text-2xl font-bold">
+
+            Major Exam (30%)
+
+          </h3>
+
+          <button
+            type="button"
+            onclick="addField('exam-container','exam')"
+            class="
+            bg-indigo-500
+            hover:bg-indigo-600
+            text-white
+            px-5 py-2
+            rounded-2xl
+            "
+          >
+
+            + Add Exam
+
+          </button>
+
+        </div>
+
+        <div
+          id="exam-container"
+          class="space-y-3"
+        >
+
+          <div class="flex gap-2">
+
+            <input
+              type="number"
+              class="
+              exam-input
+              w-full
+              p-3
+              rounded-2xl
+              bg-white/10
+              "
+              placeholder="Exam 1"
+            />
+
+            <button
+              type="button"
+              onclick="this.parentElement.remove()"
+              class="
+              bg-red-500
+              hover:bg-red-600
+              text-white
+              px-4
+              rounded-2xl
+              "
+            >
+
+              ✖
+
+            </button>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- SUBMIT -->
+      <button
+        type="submit"
+        class="
+        w-full
+        py-4
+        rounded-2xl
+        bg-gradient-to-r
+        from-cyan-500
+        via-blue-500
+        to-indigo-600
+        text-white
+        font-bold
+        text-xl
+        "
+      >
+
+        Calculate Grade
+
+      </button>
+
+    </form>
+
+  </div>
+
+  <!-- HISTORY -->
+  <div class="glass rounded-[30px] p-8">
+
+    <div class="flex justify-between mb-6">
+
+      <h2 class="text-3xl font-bold">
+
+        Student History
+
+      </h2>
+
+      <button
+        onclick="clearTable()"
+        class="
+        bg-red-500
+        hover:bg-red-600
+        text-white
+        px-5 py-2
+        rounded-2xl
+        "
+      >
+
+        Clear
+
+      </button>
+
+    </div>
+
+    <div class="overflow-x-auto">
+
+      <table class="w-full text-center">
+
+        <thead>
+
+          <tr class="border-b border-cyan-300">
+
+            <th class="p-4">Name</th>
+            <th>Quiz</th>
+            <th>Practical</th>
+            <th>Assignment</th>
+            <th>Attendance</th>
+            <th>Exam</th>
+            <th>Final</th>
+            <th>Remarks</th>
+            <th>Action</th>
+
+          </tr>
+
+        </thead>
+
+        <tbody id="final-body"></tbody>
+
+      </table>
+
+    </div>
+
+  </div>
+
+</main>
+
+<!-- APP JS -->
+<script src="app.js" defer></script>
+
+</body>
+</html>
